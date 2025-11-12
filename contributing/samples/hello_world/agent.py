@@ -15,6 +15,17 @@
 import random
 
 from google.adk import Agent
+from google.adk.tools import (
+    google_search,
+    enterprise_web_search,
+    url_context,
+    exit_loop,
+    get_user_choice,
+    load_artifacts,
+    load_memory,
+    preload_memory,
+    transfer_to_agent,
+)
 from google.adk.tools.tool_context import ToolContext
 from google.genai import types
 
@@ -29,10 +40,10 @@ def roll_die(sides: int, tool_context: ToolContext) -> int:
     An integer of the result of rolling the die.
   """
   result = random.randint(1, sides)
-  if not 'rolls' in tool_context.state:
-    tool_context.state['rolls'] = []
+  if "rolls" not in tool_context.state:
+    tool_context.state["rolls"] = []
 
-  tool_context.state['rolls'] = tool_context.state['rolls'] + [result]
+  tool_context.state["rolls"] = tool_context.state["rolls"] + [result]
   return result
 
 
@@ -58,18 +69,18 @@ async def check_prime(nums: list[int]) -> str:
     if is_prime:
       primes.add(number)
   return (
-      'No prime numbers found.'
+      "No prime numbers found."
       if not primes
       else f"{', '.join(str(num) for num in primes)} are prime numbers."
   )
 
 
 root_agent = Agent(
-    model='gemini-2.0-flash',
-    name='hello_world_agent',
+    model="gemini-1.5-flash",
+    name="hello_world_agent",
     description=(
-        'hello world agent that can roll a dice of 8 sides and check prime'
-        ' numbers.'
+        "hello world agent that can roll a dice of 8 sides and check prime"
+        " numbers."
     ),
     instruction="""
       You roll dice and answer questions about the outcome of the dice rolls.
@@ -91,6 +102,15 @@ root_agent = Agent(
     tools=[
         roll_die,
         check_prime,
+        google_search,
+        enterprise_web_search,
+        url_context,
+        exit_loop,
+        get_user_choice,
+        load_artifacts,
+        load_memory,
+        preload_memory,
+        transfer_to_agent,
     ],
     # planner=BuiltInPlanner(
     #     thinking_config=types.ThinkingConfig(
